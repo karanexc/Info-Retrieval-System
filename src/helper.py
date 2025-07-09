@@ -2,18 +2,13 @@ import os
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter  
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.vectorstores import FAISS
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
 
+# Load environment variables from .env (for local dev)
 load_dotenv()
-
-load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-
-## PDF Text
 
 # ------------------ PDF Processing ------------------
 
@@ -30,20 +25,24 @@ def get_text_chunks(text):
     chunks = text_splitter.split_text(text)
     return chunks
 
-from langchain.embeddings import OpenAIEmbeddings
+# ------------------ Vector Store ------------------
 
 def get_vector_store(text_chunks):
     embeddings = OpenAIEmbeddings(
-        openai_api_key=os.getenv("OPENAI_API_KEY"),
-        disallowed_special=()  # 👈 This disables the special token restriction
+        openai_api_key=os.getenv("OPENAI_API_KEY"),  # Will also work with st.secrets
+        disallowed_special=()  # Disables special token check
     )
     vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
     return vector_store
 
-
+# ------------------ Conversational Chain ------------------
 
 def get_conversational_chain(vector_store):
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0, openai_api_key=os.getenv("OPENAI_API_KEY"))
+    llm = ChatOpenAI(
+        model_name="gpt-3.5-turbo",
+        temperature=0,
+        openai_api_key=os.getenv("OPENAI_API_KEY")  # Will also work with st.secrets
+    )
     memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
