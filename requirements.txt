@@ -4,5 +4,6 @@ langchain
 langchain-openai
 faiss-cpu
 python-dotenv
-PyPDF2
+pypdf2
 tiktoken
+setuptools
