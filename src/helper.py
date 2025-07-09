@@ -35,6 +35,7 @@ def get_vector_store(text_chunks):
     vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
     return vector_store
 
+
 # ------------------ Conversational Chain ------------------
 
 def get_conversational_chain(vector_store):
