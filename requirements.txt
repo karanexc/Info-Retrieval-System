@@ -7,3 +7,5 @@ python-dotenv
 pypdf2
 tiktoken
 setuptools
+langchain-community
+
